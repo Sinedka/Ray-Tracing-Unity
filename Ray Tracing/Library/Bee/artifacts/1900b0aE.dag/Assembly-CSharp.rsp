@@ -357,6 +357,7 @@
 "Assets/Scripts/DataTypes/RayTracingMaterial.cs"
 "Assets/Scripts/DataTypes/Sphere.cs"
 "Assets/Scripts/DataTypes/Triangle.cs"
+"Assets/Scripts/EnvironmentSettings.cs"
 "Assets/Scripts/Helpers/ShaderHelper.cs"
 "Assets/Scripts/RayTracingManager.cs"
 "Assets/Scripts/Render Types/RayTracedMesh.cs"

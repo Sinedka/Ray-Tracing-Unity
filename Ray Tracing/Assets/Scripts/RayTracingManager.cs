@@ -12,7 +12,7 @@ public class RayTracingManager : MonoBehaviour
     [SerializeField] private Shader rayTracingShader;
     [SerializeField] private Shader accumulateShader;
     [SerializeField] private int RaysPerFrame = 10;
-
+    [SerializeField] EnvironmentSettings environmentSettings;
     private ComputeBuffer _sphereBuffer;
     private ComputeBuffer _MeshesBuffer;
     private ComputeBuffer _TrianglesBuffer;
@@ -127,6 +127,13 @@ public class RayTracingManager : MonoBehaviour
         // Send data to shader
         _rayTracingMaterial.SetVector("ViewParams", new Vector3(planeWidth, planeHeight, cam.nearClipPlane));
         _rayTracingMaterial.SetMatrix("CamLocalToWorldMatrix", cam.transform.localToWorldMatrix);
+        
+        _rayTracingMaterial.SetInteger("EnvironmentEnabled", environmentSettings.enabled ? 1 : 0);
+        _rayTracingMaterial.SetColor("GroundColour", environmentSettings.groundColour);
+        _rayTracingMaterial.SetColor("SkyColourHorizon", environmentSettings.skyColourHorizon);
+        _rayTracingMaterial.SetColor("SkyColourZenith", environmentSettings.skyColourZenith);
+        _rayTracingMaterial.SetFloat("SunFocus", environmentSettings.sunFocus);
+        _rayTracingMaterial.SetFloat("SunIntensity", environmentSettings.sunIntensity);
     }
 
     void UpdateShaderParams()

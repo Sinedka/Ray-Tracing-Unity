@@ -87,6 +87,13 @@ Shader "Custom/RayTracing"
             int Frame;
             int NumRaysPerPixel;
 
+            int EnvironmentEnabled;
+			float4 GroundColour;
+			float4 SkyColourHorizon;
+			float4 SkyColourZenith;
+			float SunFocus;
+			float SunIntensity;
+
             uint NextRandom(inout uint state)
 			{
 				state = state * 747796405 + 2891336453;
@@ -123,6 +130,21 @@ Shader "Custom/RayTracing"
 	            float3 dir = RandomDirection(rngState);
             	return dir * sign(dot(normal, dir));
             }
+            
+            			float3 GetEnvironmentLight(Ray ray)
+			{
+				if (!EnvironmentEnabled) {
+					return 0;
+				}
+				
+				float skyGradientT = pow(smoothstep(0, 0.4, ray.dir.y), 0.35);
+				float groundToSkyT = smoothstep(-0.01, 0, ray.dir.y);
+				float3 skyGradient = lerp(SkyColourHorizon, SkyColourZenith, skyGradientT);
+				float sun = pow(max(0, dot(ray.dir, _WorldSpaceLightPos0.xyz)), SunFocus) * SunIntensity;
+				// Combine ground, sky, and sun
+				float3 composite = lerp(GroundColour, skyGradient, groundToSkyT) + sun * (groundToSkyT>=1);
+				return composite;
+			}
 
             // Thanks to https://gist.github.com/DomNomNom/46bb1ce47f68d255fd5d
 			bool RayBoundingBox(Ray ray, float3 boxMin, float3 boxMax)
@@ -270,7 +292,7 @@ Shader "Custom/RayTracing"
 					}
 					else
 					{
-						incomingLight += 0 * rayColour;
+						incomingLight += GetEnvironmentLight(ray) * rayColour;
 						break;
 					}
 				}
